@@ -30,6 +30,7 @@ body {
   padding: 16px;
   font-family: "vazir";
   direction: rtl;
+  margin: 16px 0;
   input {
     padding: 20px;
     font-family: "vazir";
@@ -39,6 +40,9 @@ body {
   }
   i {
     font-family: "FontAwesome"
+  }
+  .control {
+    padding-left: 8px;
   }
 }
 
