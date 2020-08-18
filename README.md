@@ -8,6 +8,7 @@ npm run build
 
 * [webpack](https://webpack.js.org/) 
 * [eslint](https://eslint.org/) 
+* [vuejs](https://vuejs.org/)
 
 ### styled with
 * [sass]
