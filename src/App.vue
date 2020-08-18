@@ -1,7 +1,5 @@
 <template>
-  <form 
-    @submit="checkForm"
-  >
+  <form>
     <div>
       <p v-if="errors.length">
         <b>به خطاهای زیر توجه فرمایید</b>
@@ -24,6 +22,7 @@
               class="input"
               type="text"
               placeholder="نام کاربری"
+              @change="checkUserInput"
             >
           </div>
         </div>
@@ -33,9 +32,10 @@
           <div class="control has-icons-left has-icons-right">
             <input
               v-model="nationalCode"
-              class="input is-success"
+              class="input"
               type="text"
               placeholder="کد ملی"
+              @change="checkCodeInput"
             >
             <span class="icon is-small is-left">
               <i class="fas fa-user" />
@@ -52,12 +52,16 @@
             <input
               id="phone"
               v-model="phone"
-              class="input is-success"
+              class="input"
               type="tel"
               placeholder="موبایل"
+              @change="checkPhoneInput"
             >
             <span class="icon is-small is-left">
-              <i class="fas fa-user" />
+              <i
+                class="fa fa-mobile"
+                aria-hidden="true"
+              />
             </span>
             <span class="icon is-small is-right">
               <i class="fas fa-check" />
@@ -72,12 +76,16 @@
             <input
               id="pwd"
               v-model="pwd"
-              class="input is-success"
+              class="input"
               type="password"
               placeholder="رمز عبور"
+              @change="checkPassInput"
             >
             <span class="icon is-small is-left">
-              <i class="fas fa-user" />
+              <i
+                class="fa fa-lock"
+                aria-hidden="true"
+              />
             </span>
             <span class="icon is-small is-right">
               <i class="fas fa-check" />
@@ -92,12 +100,16 @@
             <input
               id="confirm-pwd"
               v-model="confirmPwd"
-              class="input is-success"
+              class="input"
               type="password"
               placeholder="تکرار رمز عبور"
+              @change="checkConfirmInput"
             >
             <span class="icon is-small is-left">
-              <i class="fas fa-user" />
+              <i
+                class="fa fa-lock"
+                aria-hidden="true"
+              />
             </span>
             <span class="icon is-small is-right">
               <i class="fas fa-check" />
@@ -107,14 +119,17 @@
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button class="button is-link">
+            <button
+              class="button is-link"
+              @click="checkForm"
+            >
               ثبت نام
             </button>
           </div>
           <div class="control">
             <button
               class="button is-link is-light"
-              v-on="formSubmit"
+              @click="cleardata"
             >
               لغو
             </button>
@@ -135,6 +150,7 @@ export default {
       pwd : null,
       phone : null,
       nationalCode: null,
+      input: null,
     }
   } ,
   methods: {
@@ -177,26 +193,59 @@ export default {
       }
 
       if (!this.errors.length) {
-        return true;
+       alert('ثبت نام با موفقیت انجام شد');
       }
 
       e.preventDefault();
     },
     //delete data form
-    formSubmit: function(event) {
-      // this.submitted.name = this.name;
-      // this.submitted.confirmPwd = this.confirmPwd;
-      // this.submitted.pwd = this.pwd;
-      // this.submitted.phone = this.phone;
-      // this.submitted.nationalCode = this.nationalCode;
-      
-      this.name ='';
-      this.confirmPwd ='';
-      this.pwd ='';
-      this.phone ='';
-      this.nationalCode ='';
-      
-      event.target.reset();
+    cleardata: function() {
+      this.name =null;
+      this.confirmPwd =null;
+      this.pwd =null;
+      this.phone =null;
+      this.nationalCode =null;
+    },
+    //cheak input
+    checkUserInput: function(){
+      let input = event.target
+      if (!this.validUser(this.name)) {
+        input.classList.add("main_red");
+      } else {
+        input.classList.remove("main_red");
+      }
+    },
+    checkPhoneInput: function(){
+      let input = event.target
+      if (!this.validPhone(this.phone)) {
+        input.classList.add("main_red");
+      } else {
+        input.classList.remove("main_red");
+      }
+    },
+    checkCodeInput: function(){
+      let input = event.target
+      if (!this.validNationalCode(this.nationalCode)) {
+        input.classList.add("main_red");
+      } else {
+        input.classList.remove("main_red");
+      }
+    },
+    checkPassInput: function(){
+      let input = event.target
+      if (!this.validPassword(this.pwd)) {
+        input.classList.add("main_red");
+      } else {
+        input.classList.remove("main_red");
+      }
+    },
+    checkConfirmInput: function(){
+      let input = event.target
+      if (!this.validConfirmpwd(this.confirmPwd)) {
+        input.classList.add("main_red");
+      } else {
+        input.classList.remove("main_red");
+      }
     },
 
     validUser: function (name) {
@@ -223,10 +272,21 @@ export default {
     },
 
     validNationalCode : function (nationalCode) {
-      var code = /^\(?([0-9]{1})\)?([0-9]{9})$/;
-      return (code.test(nationalCode));
+      if (/^\d{10}$/.test(nationalCode)) {
+        var check = parseInt(nationalCode[9]);
+        var sum = 0;
+        var i;
+        for (i = 0; i < 9; ++i) {
+          sum += parseInt(nationalCode[i]) * (10 - i);
+        }
+        sum %= 11;
+        if ((sum < 2 && check == sum) || (sum >= 2 && check + sum == 11)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     }
-    
   }
 }
   
