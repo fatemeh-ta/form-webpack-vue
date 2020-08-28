@@ -1,6 +1,6 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var VueLoaderPlugin = require('vue-loader/lib/plugin')
-var path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const path = require('path');
 
 module.exports = {
   mode: 'production',
@@ -22,39 +22,52 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader"
-        ]
+          'style-loader',
+          'css-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
-         use: [
-           'file-loader',
-         ],
+        use: [
+          'file-loader',
+        ],
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
       },
       {
         test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
+        exclude: /(node_modules)/,
         use: {
-            loader: 'babel-loader',
-            // options: {
-            //   presets: ['@babel/preset-env'],
-            // },
+          loader: 'babel-loader',
+          // options: {
+          //   presets: ['@babel/preset-env'],
+          // },
         },
       },
-    ]
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
+      },
+    ],
   },
+  devServer: {
+    contentBase: './dist',
+  },
+
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/index.html",
-      filename: './index.html'
+      template: './src/index.html',
+      filename: './index.html',
+      favicon: './src/android-icon-72x72.png',
     }),
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
 
-  ]
+  ],
 };

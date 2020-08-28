@@ -1,11 +1,12 @@
 <template>
+<div>
   <form>
     <div>
       <p v-if="errors.length">
         <b>به خطاهای زیر توجه فرمایید</b>
         <ul>
-          <li 
-            v-for="error in errors" 
+          <li
+            v-for="error in errors"
             :key="error.index"
           >
             {{ error }}
@@ -133,11 +134,27 @@
             >
               لغو
             </button>
+            <button
+              class="button is-link is-light"
+              @click="getusers()"
+            >
+              دریافت اطلاعات
+            </button>
           </div>
         </div>
       </div>
     </div>
   </form>
+  <ul>
+    <li
+      v-for="item in listUsers"
+      :key="item.index"
+    >
+      | {{ item.username }}
+      | {{ item.password }}
+    </li>
+  </ul>
+</div>
 </template>
 
 <script>
@@ -147,148 +164,184 @@ export default {
       errors: [],
       name: null,
       confirmPwd: null,
-      pwd : null,
-      phone : null,
+      pwd: null,
+      phone: null,
       nationalCode: null,
       input: null,
-    }
-  } ,
+      listUsers: '',
+    };
+  },
   methods: {
-    checkForm: function (e) {
+    postUser(value) {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(value),
+      };
+      fetch('http://127.0.0.1:9000/user/sign-up', requestOptions)
+        .then((response) => {
+          if (response.status === 200) {
+            // console.log(requestOptions);
+            this.cleardata();
+          }
+        });
+    },
+
+    // getUsers() {
+    //   fetch('http://127.0.0.1:9000/user/list')
+    //     .then((response) => {
+    //       if (response.status === 200) {
+    //         return response.json();
+    //         // console.log(response.json());
+    //       }
+    //       return '';
+    //     })
+    //     .then((data) => {
+    //       this.listUsers = data;
+    //       console.log(data);
+    //     });
+    // },
+
+    checkForm(e) {
       this.errors = [];
 
-//****************USERNAME*****************//
+      //* ***************USERNAME*****************//
       if (!this.name) {
-        this.errors.push("پر کردن نام کاربری الزامی است");
+        this.errors.push('پر کردن نام کاربری الزامی است');
       } else if (!this.validUser(this.name)) {
         this.errors.push('نام کاربری معتبر نیست');
       }
 
-//****************TELEPHONE*****************//
+      //* ***************TELEPHONE*****************//
       if (!this.phone) {
         this.errors.push('پر کردن شماره تلفن همراه الزامی است');
       } else if (!this.validPhone(this.phone)) {
         this.errors.push('تلفن همراه معتبر نیست');
       }
 
-//****************NATIONAL CODE*****************//
+      //* ***************NATIONAL CODE*****************//
       if (!this.nationalCode) {
         this.errors.push('پر کردن کد ملی الزامی است');
       } else if (!this.validNationalCode(this.nationalCode)) {
         this.errors.push('کد ملی معتبر نیست');
       }
 
-//****************PASSWORD*****************//
+      //* ***************PASSWORD*****************//
       if (!this.pwd) {
         this.errors.push('رمز عبور را انتخاب نمایید');
       } else if (!this.validPassword(this.pwd)) {
         this.errors.push(' رمز عبور معتبر نیست');
       }
 
-//****************CONFIRMPASSWORD*****************//
+      //* ***************CONFIRMPASSWORD*****************//
       if (!this.confirmPwd) {
         this.errors.push('رمز عبور خود را مجددا وارد نمایید');
-      } else  if (!this.validConfirmpwd(this.confirmPwd)) {
+      } else if (!this.validConfirmpwd(this.confirmPwd)) {
         this.errors.push('رمز عبور مجدد معتبر نیست');
       }
 
       if (!this.errors.length) {
-       alert('ثبت نام با موفقیت انجام شد');
+        // eslint-disable-next-line no-alert
+        // alert('ثبت نام با موفقیت انجام شد');
+        const user = {
+          username: this.name,
+          password: this.pwd,
+          confirmPwd: this.confirmPwd,
+          phone: this.phone,
+          nationalCode: this.nationalCode,
+        };
+        this.postUser(user);
       }
 
       e.preventDefault();
     },
-    //delete data form
-    cleardata: function() {
-      this.name =null;
-      this.confirmPwd =null;
-      this.pwd =null;
-      this.phone =null;
-      this.nationalCode =null;
+    // delete data form
+    cleardata() {
+      this.name = null;
+      this.confirmPwd = null;
+      this.pwd = null;
+      this.phone = null;
+      this.nationalCode = null;
     },
-    //cheak input
-    checkUserInput: function(){
-      let input = event.target
+    // cheak input
+    checkUserInput(event) {
+      const input = event.target;
       if (!this.validUser(this.name)) {
-        input.classList.add("main_red");
+        input.classList.add('main_red');
       } else {
-        input.classList.remove("main_red");
+        input.classList.remove('main_red');
       }
     },
-    checkPhoneInput: function(){
-      let input = event.target
+    checkPhoneInput(event) {
+      const input = event.target;
       if (!this.validPhone(this.phone)) {
-        input.classList.add("main_red");
+        input.classList.add('main_red');
       } else {
-        input.classList.remove("main_red");
+        input.classList.remove('main_red');
       }
     },
-    checkCodeInput: function(){
-      let input = event.target
+    checkCodeInput(event) {
+      const input = event.target;
       if (!this.validNationalCode(this.nationalCode)) {
-        input.classList.add("main_red");
+        input.classList.add('main_red');
       } else {
-        input.classList.remove("main_red");
+        input.classList.remove('main_red');
       }
     },
-    checkPassInput: function(){
-      let input = event.target
+    checkPassInput(event) {
+      const input = event.target;
       if (!this.validPassword(this.pwd)) {
-        input.classList.add("main_red");
+        input.classList.add('main_red');
       } else {
-        input.classList.remove("main_red");
+        input.classList.remove('main_red');
       }
     },
-    checkConfirmInput: function(){
-      let input = event.target
+    checkConfirmInput(event) {
+      const input = event.target;
       if (!this.validConfirmpwd(this.confirmPwd)) {
-        input.classList.add("main_red");
+        input.classList.add('main_red');
       } else {
-        input.classList.remove("main_red");
+        input.classList.remove('main_red');
       }
     },
 
-    validUser: function (name) {
-      var re = /^(?=.{3,20}$)(?![_.])(?![0-9])[a-zA-Z0-9._]+(?<![_.])$/;
+    validUser(name) {
+      const re = /^(?=.{3,20}$)(?![_.])(?![0-9])[a-zA-Z0-9._]+(?<![_.])$/;
       return re.test(name);
     },
 
-    validPhone : function (phone) {
-      //console.log(phone);
-      var ph =  /^\(?([0]{1})\)?([9]{1})?([0-9]{9})$/;
+    validPhone(phone) {
+      // console.log(phone);
+      const ph = /^\(?([0]{1})\)?([9]{1})?([0-9]{9})$/;
       return ph.test(phone);
     },
 
-    validPassword : function (pwd) {
-      var pass =  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
-      //console.log(pass.test(pwd));
+    validPassword(pwd) {
+      const pass = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
+      // console.log(pass.test(pwd));
       return pass.test(pwd);
     },
 
-    validConfirmpwd : function () {
-      //console.log(confirmPwd);
-      //console.log(this.pwd === this.confirmPwd) ; 
-      return (this.pwd == this.confirmPwd);
+    validConfirmpwd() {
+      // console.log(confirmPwd);
+      // console.log(this.pwd === this.confirmPwd) ;
+      return (this.pwd === this.confirmPwd);
     },
 
-    validNationalCode : function (nationalCode) {
+    validNationalCode(nationalCode) {
       if (/^\d{10}$/.test(nationalCode)) {
-        var check = parseInt(nationalCode[9]);
-        var sum = 0;
-        var i;
-        for (i = 0; i < 9; ++i) {
-          sum += parseInt(nationalCode[i]) * (10 - i);
+        const check = parseInt(nationalCode[9], 10);
+        let sum = 0;
+        let i;
+        for (i = 0; i < 9; i += 1) {
+          sum += parseInt(nationalCode[i], 10) * (10 - i);
         }
         sum %= 11;
-        if ((sum < 2 && check == sum) || (sum >= 2 && check + sum == 11)) {
-          return true;
-        } else {
-          return false;
-        }
+        return ((sum < 2 && check === sum) || (sum >= 2 && check + sum === 11));
       }
-    }
-  }
-}
-  
+      return false;
+    },
+  },
+};
 
 </script>
